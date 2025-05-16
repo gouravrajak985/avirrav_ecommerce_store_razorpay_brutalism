@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+  --primary-rgb: 255, 79, 88;
+  --secondary-rgb: 255, 219, 92;
+  --accent-rgb: 118, 211, 255;
+  --border-rgb: 0, 0, 0;
+  --shadow-color: 0, 0, 0;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+}
+
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 20, 20, 20;
+  --primary-rgb: 255, 107, 107;
+  --secondary-rgb: 255, 230, 109;
+  --accent-rgb: 138, 221, 255;
+  --border-rgb: 255, 255, 255;
+  --shadow-color: 50, 50, 50;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 72% 65.5%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 60 100% 68%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 199 100% 73%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 0%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 7.8%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7.8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7.8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 72% 71%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 60 95% 71.5%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 199 100% 77%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 100%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body {
+    @apply h-full;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .neu-border {
+    @apply border-2 border-black;
+    /* Remove box-shadow */
+  }
+
+  .neu-shadow {
+    @apply shadow-[5px_5px_0px_rgb(var(--shadow-color))] hover:shadow-[8px_8px_0px_rgb(var(--shadow-color))] transition-all duration-200;
+  }
+
+  .neu-button {
+    @apply border-2 border-black px-6 py-3 font-bold transition-colors;
+    /* Remove box-shadow */
+  }
+
+  .neu-card {
+    @apply border-2 border-black p-6;
+    /* Remove box-shadow */
+  }
+  
+  .neu-container {
+    @apply max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12;
+  }
+
+  .clip-hex {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+}
+
+.dark {
+  color-scheme: dark;
+}
