@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
+  --background-rgb: 255, 250, 240;
   --primary-rgb: 255, 79, 88;
   --secondary-rgb: 255, 219, 92;
   --accent-rgb: 118, 211, 255;
@@ -78,7 +78,7 @@
     @apply h-full;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-[#FFFAF0] text-foreground font-sans antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -88,8 +88,7 @@
 
 @layer components {
   .neu-border {
-    @apply border-2 border-black;
-    /* Remove box-shadow */
+    @apply border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
   }
 
   .neu-shadow {
@@ -97,13 +96,11 @@
   }
 
   .neu-button {
-    @apply border-2 border-black px-6 py-3 font-bold transition-colors;
-    /* Remove box-shadow */
+    @apply border-2 border-black px-6 py-3 font-bold transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)];
   }
 
   .neu-card {
-    @apply border-2 border-black p-6;
-    /* Remove box-shadow */
+    @apply border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
   }
   
   .neu-container {
