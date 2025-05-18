@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 declare global {
   interface Window {
@@ -57,8 +58,6 @@ interface shippingAddress {
   country: string;
 }
 
-
-
 export function CheckoutForm({ productPrice, productName, productId, storeUrl, username, storeName }: CheckoutFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,9 +80,7 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
 
   const searchParams = useSearchParams();
 
-  // Load customer email from localStorage if available
   useEffect(() => {
-    // Safe access to localStorage (only available in browser)
     if (typeof window !== 'undefined') {
       const savedEmail = localStorage.getItem("customerEmail");
       if (savedEmail) {
@@ -108,7 +105,6 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
           form.setValue("postalCode", addressData.postalCode);
           form.setValue("country", addressData.country);
         } catch (error) {
-          // If it's not valid JSON, use it as a regular string
           form.setValue("addressLine1", customerShippingAddress);
         }
       }
@@ -116,7 +112,6 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
   }, [form]);
 
   useEffect(() => {
-    // Load Razorpay SDK
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
@@ -139,18 +134,17 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
     setIsMounted(true);
   }, []);
 
- async function onSubmit(formData: CheckoutFormValues) {
+  async function onSubmit(formData: CheckoutFormValues) {
     setIsSubmitting(true);
     try {
       const totalPrice = parseFloat(productPrice);
-      console.log("storeUrl",storeUrl)
       const response = await fetch(`${storeUrl}/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          productIds : [productId],
+          productIds: [productId],
           amount: totalPrice * 100,
           ...formData
         })
@@ -163,36 +157,33 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
       
       const responseData = await response.json();
       
-      // Razorpay API returns order directly, not nested under data property
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: responseData.amount, 
+        amount: responseData.amount,
         currency: responseData.currency,
         name: storeName || "Store",
         description: "Purchase Description",
-        order_id: responseData.id, // Razorpay returns id, not orderId
+        order_id: responseData.id,
         handler: async function (response: any) {
-            // Verify payment on server
-            const verifyResponse = await fetch(`${storeUrl}/verify-payment`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
-              }),
-            });
-            console.log("verifyResponse",verifyResponse);
-            if (verifyResponse.ok) {
-              toast.success('Payment completed.');
-              router.push(`/${username}/${productId}/payment-status?username=${username}&productId=${productId}&success=true`);
-            } else {
-              toast.error('Payment verification failed.');
-              router.push(`/${username}/${productId}/payment-status?username=${username}&productId=${productId}&failed=true`);
-            }
-          },
+          const verifyResponse = await fetch(`${storeUrl}/verify-payment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            }),
+          });
+          if (verifyResponse.ok) {
+            toast.success('Payment completed.');
+            router.push(`/${username}/${productId}/payment-status?username=${username}&productId=${productId}&success=true`);
+          } else {
+            toast.error('Payment verification failed.');
+            router.push(`/${username}/${productId}/payment-status?username=${username}&productId=${productId}&failed=true`);
+          }
+        },
         prefill: {
           name: formData.fullName,
           email: formData.email,
@@ -211,25 +202,29 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
     } finally {
       setIsSubmitting(false);
     }
-   
   }
 
   return (
-    <>
-      <div className="border-2">
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-4">Customer Information</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="space-y-6">
+        {/* Customer Information */}
+        <div className="neu-border bg-white p-6">
+          <h3 className="text-2xl font-black mb-6 tracking-tight">Customer Information</h3>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="font-bold">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input placeholder="John Doe" {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -240,9 +235,9 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="font-bold">Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="john.doe@example.com" {...field} />
+                        <Input placeholder="john@example.com" {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -253,9 +248,9 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel className="font-bold">Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1 (555) 123-4567" {...field} />
+                        <Input placeholder="+91 9876543210" {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -265,21 +260,20 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
             </form>
           </Form>
         </div>
-      </div>
 
-      <div className="border-2 border-t-0">
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-4">Shipping Address</h3>
+        {/* Shipping Address */}
+        <div className="neu-border bg-white p-6">
+          <h3 className="text-2xl font-black mb-6 tracking-tight">Shipping Address</h3>
           <Form {...form}>
-            <form className="space-y-4">
+            <form className="space-y-6">
               <FormField
                 control={form.control}
                 name="addressLine1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Street Address</FormLabel>
+                    <FormLabel className="font-bold">Street Address</FormLabel>
                     <FormControl>
-                      <Input placeholder="123 Main St" {...field} />
+                      <Input placeholder="123 Main St" {...field} className="neu-input" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -290,23 +284,23 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
                 name="addressLine2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Landmark</FormLabel>
+                    <FormLabel className="font-bold">Landmark</FormLabel>
                     <FormControl>
-                      <Input placeholder="Near the" {...field} />
+                      <Input placeholder="Near Park" {...field} className="neu-input" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="city"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel className="font-bold">City</FormLabel>
                       <FormControl>
-                        <Input placeholder="New York" {...field} />
+                        <Input placeholder="Mumbai" {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -317,24 +311,22 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
                   name="state"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>State / Province</FormLabel>
+                      <FormLabel className="font-bold">State</FormLabel>
                       <FormControl>
-                        <Input placeholder="NY" {...field} />
+                        <Input placeholder="Maharashtra" {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="postalCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ZIP / Postal Code</FormLabel>
+                      <FormLabel className="font-bold">PIN Code</FormLabel>
                       <FormControl>
-                        <Input placeholder="10001" {...field} />
+                        <Input placeholder="400001" {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -345,9 +337,9 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
                   name="country"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country</FormLabel>
+                      <FormLabel className="font-bold">Country</FormLabel>
                       <FormControl>
-                        <Input placeholder="United States" {...field} />
+                        <Input {...field} className="neu-input" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -357,44 +349,40 @@ export function CheckoutForm({ productPrice, productName, productId, storeUrl, u
             </form>
           </Form>
         </div>
-      </div>
 
-      <div className="border-2 border-t-0">
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+        {/* Order Summary */}
+        <div className="neu-border bg-[#FFE5E5] p-6">
+          <h3 className="text-2xl font-black mb-6 tracking-tight">Order Summary</h3>
           <div className="space-y-4">
-          <div className="flex justify-between text-sm">
-              <span>Product</span>
+            <div className="flex justify-between items-center">
+              <span className="font-bold">Product</span>
               <span>{productName}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span>Subtotal</span>
+            <div className="flex justify-between items-center">
+              <span className="font-bold">Subtotal</span>
               <span>₹{productPrice}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span>Shipping</span>
+            <div className="flex justify-between items-center">
+              <span className="font-bold">Shipping</span>
               <span>Free</span>
             </div>
-            <Separator className="my-2" />
-            <div className="flex justify-between font-semibold text-lg">
-              <span>Total to Pay</span>
-              <span>₹{productPrice}</span>
+            <Separator className="my-4 bg-black" />
+            <div className="flex justify-between items-center">
+              <span className="text-xl font-black">Total to Pay</span>
+              <span className="text-xl font-black">₹{productPrice}</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="border-2 border-t-0">
-        <div className="p-4">
-          <Button
-            onClick={form.handleSubmit(onSubmit)}
-            className="w-full"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Processing..." : "Proceed to Payment"}
-          </Button>
-        </div>
+        {/* Payment Button */}
+        <Button
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          className="w-full h-14 text-lg font-bold neu-button bg-black text-white hover:bg-[#333] transition-colors"
+        >
+          {isSubmitting ? "Processing..." : "Proceed to Payment"}
+        </Button>
       </div>
-    </>
+    </motion.div>
   );
 }

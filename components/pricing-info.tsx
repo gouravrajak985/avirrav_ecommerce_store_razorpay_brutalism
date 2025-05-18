@@ -43,19 +43,19 @@ const PricingInfo: React.FC<PricingInfoProps> = ({ items, username, productId, s
             <div className="p-2 neu-border bg-white">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <span className="font-medium">100% Secure Payment</span>
+            <span className="font-medium">Verified Seller</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="p-2 neu-border bg-white">
               <RefreshCcw className="w-5 h-5" />
             </div>
-            <span className="font-medium">30-Day Returns</span>
+            <span className="font-medium">Secure Payment</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="p-2 neu-border bg-white">
               <BadgeCheck className="w-5 h-5" />
             </div>
-            <span className="font-medium">Quality Guaranteed</span>
+            <span className="font-medium">Genuine Products Guaranteed</span>
           </div>
         </div>
       </div>

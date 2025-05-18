@@ -28,7 +28,7 @@ const Home = async ({params}: StorePageProps) => {
       <Navbar storeUrl={store?.apiUrl} username={params.username} productId={params.productid} />
       
       {/* Billboard Section */}
-      <div className="mt-24">
+      <div className="mt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="neu-border bg-white transform hover:translate-x-1 hover:-translate-y-1 transition-transform">
             <BillboardPage data={billboard} />
